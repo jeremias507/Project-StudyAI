@@ -72,7 +72,7 @@ export function DashboardSidebar() {
       <Button
         variant="ghost"
         size="icon"
-        className="fixed left-4 top-4 z-50 lg:hidden"
+        className="fixed right-4 top-4 z-50 rounded-full border border-border/40 bg-card/80 backdrop-blur-sm lg:hidden"
         onClick={() => setMobileOpen(!mobileOpen)}
       >
         {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
