@@ -12,11 +12,21 @@ import {
   FolderOpen,
   Check,
   Copy,
-  ChevronDown,
-  Sparkles
+  Sparkles,
+  User,
+  Settings,
+  LogOut
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Progress } from "@/components/ui/progress"
 
 // Simulated data - adapt to your real data
 const projectStats = {
@@ -24,6 +34,12 @@ const projectStats = {
   quizzesCompleted: 28,
   studyProgress: 78,
   lastActivity: "Hace 2 horas"
+}
+
+const userData = {
+  name: "Estudiante",
+  email: "estudiante@email.com",
+  avatar: null
 }
 
 export default function DashboardPage() {
@@ -37,40 +53,94 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Project Header */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <h1 className="text-3xl font-semibold text-foreground">StudyAI</h1>
-          <Badge variant="outline" className="rounded-md border-border/60 bg-muted/50 px-2 py-0.5 text-xs font-medium text-muted-foreground">
-            ESTUDIANTE
-          </Badge>
+      {/* Top Bar with Profile */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          {/* Profile Avatar */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 text-sm font-semibold text-white ring-2 ring-border/40 transition-all hover:ring-emerald-500/50 focus:outline-none focus:ring-emerald-500/50">
+                {userData.avatar ? (
+                  <img src={userData.avatar} alt="Avatar" className="h-full w-full rounded-full object-cover" />
+                ) : (
+                  <span>{userData.name.charAt(0).toUpperCase()}</span>
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56 border-border/60 bg-card">
+              <div className="px-3 py-2">
+                <p className="text-sm font-medium text-foreground">{userData.name}</p>
+                <p className="text-xs text-muted-foreground">{userData.email}</p>
+              </div>
+              <DropdownMenuSeparator className="bg-border/60" />
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <Link href="/profile" className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <span>Mi Perfil</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <Link href="/profile?view=settings" className="flex items-center gap-2">
+                  <Settings className="h-4 w-4" />
+                  <span>Configuracion</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-border/60" />
+              <DropdownMenuItem asChild className="cursor-pointer text-destructive focus:text-destructive">
+                <Link href="/" className="flex items-center gap-2">
+                  <LogOut className="h-4 w-4" />
+                  <span>Cerrar Sesion</span>
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          {/* Project Name and Badge */}
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-semibold text-foreground">StudyAI</h1>
+              <Badge variant="outline" className="rounded-md border-border/60 bg-muted/50 px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                ESTUDIANTE
+              </Badge>
+            </div>
+            {/* Project URL */}
+            <div className="mt-1 flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                studyai.vercel.app/dashboard
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCopy}
+                className="h-6 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground"
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-3 w-3 text-emerald-500" />
+                    <span className="text-emerald-500">Copiado</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3 w-3" />
+                    <span>Copiar</span>
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
         </div>
-        
-        {/* Project URL */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">
-            studyai.vercel.app/dashboard
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleCopy}
-            className="h-7 gap-1.5 rounded-md border-border/60 bg-muted/30 px-2 text-xs hover:bg-muted/50"
-          >
-            {copied ? (
-              <>
-                <Check className="h-3 w-3 text-green-500" />
-                Copiado
-              </>
-            ) : (
-              <>
-                <Copy className="h-3 w-3" />
-                Copiar
-              </>
-            )}
-            <ChevronDown className="h-3 w-3 opacity-50" />
-          </Button>
-        </div>
+
+        {/* Right side - Quick Upload */}
+        <Button
+          asChild
+          size="sm"
+          className="gap-2 bg-emerald-600 text-white hover:bg-emerald-700"
+        >
+          <Link href="/upload">
+            <Upload className="h-4 w-4" />
+            <span className="hidden sm:inline">Subir Documento</span>
+          </Link>
+        </Button>
       </div>
 
       {/* Main Content Grid */}
@@ -127,18 +197,23 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Progress Card */}
-          <div className="flex items-center gap-4 rounded-lg border border-border/40 bg-card/50 p-4 backdrop-blur-sm">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-border/40 bg-muted/30">
-              <TrendingUp className="h-5 w-5 text-muted-foreground" />
+          {/* Progress Card with Bar */}
+          <div className="rounded-lg border border-border/40 bg-card/50 p-4 backdrop-blur-sm">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-border/40 bg-muted/30">
+                <TrendingUp className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  PROGRESO GENERAL
+                </p>
+                <p className="text-lg font-medium text-foreground">
+                  {projectStats.studyProgress}% completado
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                PROGRESO
-              </p>
-              <p className="text-lg font-medium text-foreground">
-                {projectStats.studyProgress}% completado
-              </p>
+            <div className="mt-3">
+              <Progress value={projectStats.studyProgress} className="h-2 bg-muted/50" />
             </div>
           </div>
         </div>
